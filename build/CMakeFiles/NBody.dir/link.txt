@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/NBody.dir/NBody.cpp.o -o NBody  -Wl,-rpath,/home/ubuntu/SFML/lib /home/ubuntu/SFML/lib/libsfml-graphics.so.2.6.1 /home/ubuntu/SFML/lib/libsfml-window.so.2.6.1 /home/ubuntu/SFML/lib/libsfml-audio.so.2.6.1 /home/ubuntu/SFML/lib/libsfml-network.so.2.6.1 /usr/lib/x86_64-linux-gnu/libOpenCL.so /home/ubuntu/SFML/lib/libsfml-system.so.2.6.1 

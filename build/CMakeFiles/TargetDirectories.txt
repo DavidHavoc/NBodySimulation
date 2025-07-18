@@ -1,0 +1,3 @@
+/home/ubuntu/NBody/build/CMakeFiles/NBody.dir
+/home/ubuntu/NBody/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/NBody/build/CMakeFiles/rebuild_cache.dir

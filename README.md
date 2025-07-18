@@ -1,185 +1,104 @@
-# N-Body Simulation - High-Performance Computing Project
+# N-Body Simulation
 
-A high-performance N-body gravitational simulation implemented in C++ with both sequential CPU and parallel OpenCL implementations, featuring real-time SFML visualization.
-
-## Features
-
-- **Sequential CPU Implementation**: Traditional single-threaded CPU computation for smaller body counts
-- **Parallel OpenCL Implementation**: GPU-accelerated computation using OpenCL for large-scale simulations
-- **Real-time Visualization**: SFML-based graphics with smooth 165 FPS target
-- **Structure of Arrays (SOA)**: Optimized memory layout for parallel processing
-- **Toroidal Universe**: Bodies wrap around screen edges for continuous simulation
-- **Dynamic Body Count**: Supports from 5 to 1000+ bodies depending on hardware
-- **Performance Monitoring**: Real-time FPS and computation time display
+This project implements a simplified N-body problem simulation with graphical visualization using SFML (Simple and Fast Multimedia Library) and an optional OpenCL parallelization.
 
 ## Project Structure
 
 ```
 NBody/
-├── NBody.cpp              # Main application file
-├── src/
-│   └── Body.cpp          # Body class implementation
+├── CMakeLists.txt
+├── NBody.cpp
+├── font.ttf
 ├── include/
-│   └── Body.h            # Body class header
+│   └── Body.h
 ├── opencl/
-│   └── NBody.cl          # OpenCL kernel implementations
-├── CMakeLists.txt        # CMake build configuration
-├── install_sfml.sh       # SFML installation script
-├── font.ttf              # Font file for text rendering
-└── README.md             # This documentation
+│   └── NBody.cl
+└── src/ (no longer used for Body.cpp)
 ```
 
-## Requirements
+- `NBody.cpp`: Contains the main application logic, including the simulation loop, force calculation, integration, and SFML rendering. It now includes logic to switch between sequential and OpenCL execution.
+- `include/Body.h`: Definition of the `BodiesSOA` struct for Structure of Arrays data layout.
+- `opencl/NBody.cl`: OpenCL kernel file containing `compute_forces` and `integrate_bodies` functions for parallel execution on OpenCL devices.
+- `font.ttf`: Placeholder for the font file used for displaying FPS. If you have a specific font, replace this file.
+- `CMakeLists.txt`: CMake build script for the project, now configured to find and link OpenCL libraries.
 
-### System Dependencies
-- **C++ Compiler**: GCC 7+ or Clang 6+ with C++17 support
-- **CMake**: Version 3.16 or higher
-- **SFML**: Version 2.5 or higher
-- **OpenCL**: Version 1.2 or higher (optional, for GPU acceleration)
+## Prerequisites
 
-### Hardware Requirements
-- **CPU**: Any modern multi-core processor
-- **GPU**: OpenCL-compatible GPU (NVIDIA, AMD, or Intel) for parallel implementation
-- **RAM**: At least 4GB (8GB+ recommended for large simulations)
+To build and run this project, you need the following:
 
-## Installation
+- C++ Compiler (g++ recommended)
+- CMake (version 3.10 or higher)
+- SFML 2.6.1 (Simple and Fast Multimedia Library)
+- OpenCL development environment (headers, ICD loader, and a compatible runtime for your CPU/GPU).
 
-### 1. Install Dependencies
+## SFML and OpenCL Installation
 
-Run the provided installation script:
+SFML was installed using a custom script. The installation prefix is `$HOME/SFML`. The necessary libraries and headers are located in this directory.
+
+OpenCL development environment (headers and ICD loader) was installed using `apt-get`. For the OpenCL runtime, an Intel OpenCL ICD was installed.
+
+## Building the Project
+
+1. Navigate to the `NBody` directory:
+   ```bash
+   cd NBody
+   ```
+
+2. Create a `build` directory and navigate into it:
+   ```bash
+   mkdir build
+   cd build
+   ```
+
+3. Run CMake to configure the project. Ensure that `CMAKE_PREFIX_PATH` is set to the SFML installation directory:
+   ```bash
+   cmake .. -DCMAKE_PREFIX_PATH=$HOME/SFML
+   ```
+
+4. Build the project using `make`:
+   ```bash
+   make
+   ```
+
+## Running the Project
+
+After building, the executable `NBody` will be located in the `build` directory. Before running, you need to set the `LD_LIBRARY_PATH` environment variable to include the SFML library directory.
+
+From the `build` directory:
+
 ```bash
-chmod +x install_sfml.sh
-./install_sfml.sh
-```
-Or install manually:
-```bash
-# Ubuntu/Debian
-sudo apt-get update
-sudo apt-get install libsfml-dev opencl-headers ocl-icd-libopencl1 ocl-icd-dev build-essential cmake pkg-config
-
-# macOS (with Homebrew)
-brew install sfml opencl-headers
-
-# Windows (with vcpkg)
-vcpkg install sfml opencl
+export LD_LIBRARY_PATH=$HOME/SFML/lib:$LD_LIBRARY_PATH
+./NBody
 ```
 
-### 2. Build the Project
+## Running Modes (Sequential vs. OpenCL)
+
+This application supports both sequential and OpenCL parallel execution modes.
+
+### Sequential Mode
+
+To run the simulation in sequential mode (default):
 
 ```bash
-mkdir build
-cd build
-cmake ..
-make
+./NBody
 ```
 
-### 3. Run the Simulation
+### OpenCL Mode
+
+To run the simulation using OpenCL (if an OpenCL device is available):
 
 ```bash
-./NBodySimulation
+./NBody --opencl
 ```
 
-## Usage
+## OpenCL Kernel Details
 
-When you run the simulation, you'll be prompted to choose between:
-1. **Sequential CPU**: Single-threaded implementation suitable for learning and small simulations
-2. **OpenCL GPU/CPU**: Parallel implementation for high-performance computing
+The `opencl/NBody.cl` file contains the OpenCL kernel functions `compute_forces` and `integrate_bodies`. These kernels perform the gravitational force calculations and body position/velocity updates in parallel on the OpenCL device.
 
-### Controls
-- **Close Window**: ESC or click the X button
-- **Performance Info**: Displayed in the top-left corner
+- **`compute_forces`**: Calculates the gravitational forces exerted on each body by all other bodies.
+- **`integrate_bodies`**: Updates the position and velocity of each body based on the calculated forces.
 
-### Configuration
+## Toroidal Universe
 
-Key parameters can be modified in the source code:
-
-```cpp
-// In NBody.cpp
-constexpr size_t n_bodies = 1000;     // Number of bodies
-constexpr float G = 1.0f;             // Gravitational constant
-constexpr float dt = 0.1f;            // Time step
-constexpr float eps = 1e-1f;          // Softening parameter
-constexpr float TARGET_FPS = 165.0f;  // Target frame rate
-```
-
-## Implementation Details
-
-### Physics Model
-
-The simulation implements a simplified N-body gravitational system:
-
-1. **Force Calculation**: For each body pair (i,j):
-   ```
-   F_ij = G * m_j * m_i / (r_ij^2 + ε^2)^(3/2)
-   ```
-
-2. **Integration**: Leapfrog integration scheme:
-   ```
-   v(t+dt) = v(t) + a(t) * dt
-   x(t+dt) = x(t) + v(t+dt) * dt
-   ```
-
-3. **Boundary Conditions**: Toroidal universe with wraparound
-
-### Performance Optimizations
-
-- **Structure of Arrays (SOA)**: Memory layout optimized for SIMD operations
-- **OpenCL Parallelization**: Each body's force calculation runs in parallel
-- **Memory Coalescing**: Efficient GPU memory access patterns
-- **Softening Parameter**: Prevents numerical instabilities at close distances
-
-### Visualization Features
-
-- **Color Coding**: Body color varies with mass (red = heavy, blue = light)
-- **Size Scaling**: Visual size reflects body mass
-- **Smooth Animation**: 165 FPS target with frame limiting
-- **Real-time Metrics**: FPS, body count, and computation time display
-
-## Troubleshooting
-
-### Common Issues
-
-1. **OpenCL Not Found**
-   ```
-   Error: No OpenCL platforms found
-   ```
-   - Install OpenCL drivers for your GPU
-   - The simulation will automatically fall back to CPU mode
-
-2. **SFML Not Found**
-   ```
-   Error: SFML development libraries not found
-   ```
-   - Run `./install_sfml.sh` or install SFML manually
-   - Ensure pkg-config can find SFML
-
-3. **Font Loading Error**
-   ```
-   Failed to load font
-   ```
-   - Ensure `font.ttf` exists in the project directory
-   - The simulation will use default font if custom font fails
-
-4. **Poor Performance**
-   - Reduce `n_bodies` constant for better performance
-   - Ensure GPU drivers are properly installed
-   - Check if system has sufficient RAM
-
-### Debug Build
-
-For development and debugging:
-```bash
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-make
-```
-
-## Educational Value
-
-This project demonstrates several important HPC concepts:
-
-- **Parallel Algorithm Design**: Converting sequential algorithms to parallel
-- **Memory Layout Optimization**: AoS vs SoA performance implications
-- **GPU Computing**: OpenCL programming model and best practices
-- **Performance Analysis**: Measuring and optimizing computational bottlenecks
-- **Numerical Methods**: Stable integration schemes for physical simulation
+The `integrate_bodies` OpenCL kernel includes logic to implement a toroidal universe. This means that if a body moves beyond the window boundaries on one side, it will re-enter from the opposite side, preventing bodies from disappearing from the simulation view.
 
