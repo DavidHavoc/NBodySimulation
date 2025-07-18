@@ -51,7 +51,6 @@ Run the provided installation script:
 chmod +x install_sfml.sh
 ./install_sfml.sh
 ```
-
 Or install manually:
 ```bash
 # Ubuntu/Debian
@@ -184,31 +183,3 @@ This project demonstrates several important HPC concepts:
 - **Performance Analysis**: Measuring and optimizing computational bottlenecks
 - **Numerical Methods**: Stable integration schemes for physical simulation
 
-## Extensions and Modifications
-
-Consider these enhancements for further learning:
-
-1. **Advanced Integrators**: Implement Runge-Kutta or Verlet integration
-2. **Hierarchical Methods**: Add Barnes-Hut algorithm for O(N log N) complexity
-3. **Multiple Forces**: Include electromagnetic or strong nuclear forces
-4. **Collision Detection**: Handle body mergers and fragmentation
-5. **3D Visualization**: Extend to three-dimensional space
-6. **Distributed Computing**: MPI implementation for cluster computing
-
-## License
-
-This project is developed for educational purposes as part of the High-Performance Computing course at the Institute for Computer Science.
-
-## Contributors
-
-- Prof. Dr. Ivan Kisel (Course Instructor)
-- Robin Lakos (Teaching Assistant)
-- Akhil Mithran (Teaching Assistant)
-- Oddharak Tyagi (Teaching Assistant)
-
-## References
-
-- [SFML Documentation](https://www.sfml-dev.org/documentation/)
-- [OpenCL Programming Guide](https://www.khronos.org/opencl/)
-- [N-Body Problem - Wikipedia](https://en.wikipedia.org/wiki/N-body_problem)
-- [GPU Computing Best Practices](https://developer.nvidia.com/blog/gpu-computing-best-practices/)
