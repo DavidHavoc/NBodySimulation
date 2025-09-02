@@ -1,4 +1,4 @@
-# N-Body Simulation - High-Performance Computing Project
+# N-Body Simulation - High-Performance Computing Project build for UNI
 
 A high-performance N-body gravitational simulation implemented in C++ with both sequential CPU and parallel OpenCL implementations, featuring real-time SFML visualization.
 
